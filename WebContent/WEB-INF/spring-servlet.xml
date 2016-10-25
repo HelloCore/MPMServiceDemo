@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+		xmlns:context="http://www.springframework.org/schema/context"
+		xmlns:mvc="http://www.springframework.org/schema/mvc"
+		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+		xmlns:util="http://www.springframework.org/schema/util"
+		xmlns:aop="http://www.springframework.org/schema/aop"
+		xsi:schemaLocation="http://www.springframework.org/schema/beans
+		http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+		http://www.springframework.org/schema/context
+		http://www.springframework.org/schema/context/spring-context-4.0.xsd
+		http://www.springframework.org/schema/mvc
+		http://www.springframework.org/schema/mvc/spring-mvc-4.0.xsd
+        http://www.springframework.org/schema/util 
+        http://www.springframework.org/schema/util/spring-util-4.0.xsd
+        http://www.springframework.org/schema/aop
+        http://www.springframework.org/schema/aop/spring-aop-4.0.xsd">
+	
+		
+		<context:spring-configured  />
+				
+		<aop:aspectj-autoproxy proxy-target-class="true" >
+		 	<aop:include name="SessionValidator"/>
+		</aop:aspectj-autoproxy>
+		
+		<bean id="SessionValidator" class="io.github.hellocore.MPMService.Util.SessionValidator" />
+		
+		<bean id="exceptionResolver" class="io.github.hellocore.MPMService.Exception.MPMServiceExceptionResolver" />
+		 
+		
+		<bean class="io.github.hellocore.MPMService.Controller.TimesheetController">
+  			<property name="timesheetService" ref="timesheetService"></property>
+		</bean>
+		<bean id="timesheetService" class="io.github.hellocore.MPMService.Service.Impl.TimesheetServiceImpl" >
+  			<property name="basicHttpService" ref="basicHttpService"></property>			
+		</bean>
+		
+		<bean class="io.github.hellocore.MPMService.Controller.CustomerProjectController">
+  			<property name="customerProjectService" ref="customerProjectService"></property>
+		</bean>
+		<bean id="customerProjectService" class="io.github.hellocore.MPMService.Service.Impl.CustomerProjectServiceImpl" >
+  			<property name="basicHttpService" ref="basicHttpService"></property>			
+		</bean>
+		
+		<bean class="io.github.hellocore.MPMService.Controller.AuthenticationController">
+  			<property name="authenticationService" ref="authenticationService"></property>
+		</bean>
+		<bean id="authenticationService" class="io.github.hellocore.MPMService.Service.Impl.AuthenticationServiceImpl" >
+  			<property name="basicHttpService" ref="basicHttpService"></property>			
+		</bean>		
+		
+		<bean id="basicHttpService" class="io.github.hellocore.MPMService.Service.Impl.BasicHttpServiceImpl" />
+	
+
+		<bean id="stringHttpMessageConverter" class="org.springframework.http.converter.StringHttpMessageConverter" />
+		<bean id="jsonHttpMessageConverter" class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter">
+		    <property name="supportedMediaTypes" value="application/json"/>
+		</bean>
+		
+		<bean id="defaultRequestToViewNameTranslator" class="org.springframework.web.servlet.view.DefaultRequestToViewNameTranslator"/>
+		
+		<bean class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter">
+			<property name="alwaysUseFullPath" value="true" />
+			<property name="cacheSeconds" value="0" />
+		    <property name="messageConverters">
+		      <util:list id="beanList">
+		        <ref bean="jsonHttpMessageConverter"/>
+		      </util:list>
+		    </property>
+		</bean>
+		
+		<bean class="io.github.hellocore.MPMService.Filter.JsonpCallbackFilter" id="jsonpCallbackFilter" />
+
+		
+		
+</beans>
